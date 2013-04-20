@@ -4,28 +4,54 @@
   </head>
 
   <body>
-    <canvas id="canvas" width="1024" height="1024">
+    <canvas id="canvas" width="400" height="400">
     </canvas>
 
     <script type="text/javascript" src="delaunay.js"></script>
     <script type="text/javascript">
       var canvas = document.getElementById("canvas"),
           ctx = canvas.getContext("2d"),
-          i = 2048,
+          i = 8,
           vertices = new Array(i),
           x, y
 
-      while(i) {
-        do {
-          x = Math.random() - 0.5
-          y = Math.random() - 0.5
-        } while(x * x + y * y > 0.25)
+      vertices = [{
+        x: 100,
+        y: 0
+      }, {
+        x: 300,
+        y: 0
+      }, {
+        x: 400,
+        y: 100
+      }, {
+        x: 400,
+        y: 300
+      }, {
+        x: 300,
+        y: 400
+      }, {
+        x: 100,
+        y: 400
+      }, {
+        x: 0,
+        y: 300
+      }, {
+        x: 0,
+        y: 100
+      }, {
+        // this ninth vertex is the player position (default to center)
+        x: 200,
+        y: 200
+      }];
 
-        x = (x * 0.96875 + 0.5) * canvas.width
-        y = (y * 0.96875 + 0.5) * canvas.height
-
-        vertices[--i] = {x: x, y: y}
-      }
+      // add weight to outer vertices
+      // 6.25 is the "additive" value per level
+      // this over-simplified example shows how 4 level 8 rez
+      // on the 4 right-hand vertices would affect the triangulation
+      // max values are +/- 200 on either axis to remain within the octagon
+      vertices[8].x = vertices[8].x + 6.25*8*4 // 4 L8 rez on right side
+      vertices[8].x = vertices[8].x + -6.25*1*4 // 4 L1 rez on left side (negative value for left)
 
       console.time("triangulate")
       var triangles = triangulate(vertices)
